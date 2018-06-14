@@ -29,8 +29,7 @@ func TestFile_Checksum(t *testing.T) {
 
 	for _, c := range cases {
 		// path := filepath.Join(folder, c.path)
-		path := c.path
-		checksum, err := f.Checksum(path)
+		checksum, err := f.Checksum(c.path)
 
 		switch {
 		case c.hasError && err == nil:
@@ -38,13 +37,13 @@ func TestFile_Checksum(t *testing.T) {
 		case !c.hasError && err != nil:
 			t.Errorf("want no error, but error [%s] happens", err.Error())
 		case checksum != c.checksum:
-			t.Errorf("checksum of [%s] is [%s], want [%s]", path, checksum, c.checksum)
+			t.Errorf("checksum of [%s] is [%s], want [%s]", c.path, checksum, c.checksum)
 		}
 	}
 }
 
 func TestFile_Dir(t *testing.T) {
-	ss := &fsync.SkipSetting{}
+	ss := &fsync.IgnoreSetting{}
 	cases := []struct {
 		file *File
 		dir  string
@@ -107,8 +106,8 @@ func TestFile_Copy(t *testing.T) {
 			}
 
 			// clean up
-			for _, path := range c.cleanList {
-				f.Remove(path)
+			for _, fpath := range c.cleanList {
+				f.Remove(fpath)
 			}
 		}
 	}
@@ -116,8 +115,8 @@ func TestFile_Copy(t *testing.T) {
 
 func TestFile_GetList(t *testing.T) {
 	type fields struct {
-		Path       string
-		SkipFilter *fsync.SkipSetting
+		Path          string
+		IgnoreSetting *fsync.IgnoreSetting
 	}
 	type args struct {
 		list *fsync.FileList
@@ -133,8 +132,8 @@ func TestFile_GetList(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			f := &File{
-				Path:       tt.fields.Path,
-				SkipFilter: tt.fields.SkipFilter,
+				Path:          tt.fields.Path,
+				IgnoreSetting: tt.fields.IgnoreSetting,
 			}
 			if err := f.GetList(tt.args.list); (err != nil) != tt.wantErr {
 				t.Errorf("File.GetList() error = %v, wantErr %v", err, tt.wantErr)

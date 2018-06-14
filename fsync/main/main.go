@@ -1,7 +1,7 @@
 /*
 TODO:
-. improve output
-. file index/checksum
+. parallel
+. skip file customization: .syncignore
 . test case
 */
 package main
@@ -11,169 +11,60 @@ import (
 	"os"
 	"path/filepath"
 
-	"errors"
+	"flag"
 
 	"github.com/ttchengcheng/file/fsync"
-	"github.com/ttchengcheng/file/fsync/cache"
 	"github.com/ttchengcheng/file/fsync/local"
 )
 
-type taskFn func() error
-
-func task(fn taskFn, format string, a ...interface{}) {
-	fmt.Printf(format+"...", a...)
-	if err := fn(); err != nil {
-		fmt.Println("failed.")
-		panic(err)
-	} else {
-		fmt.Println("done.")
-	}
+type Args struct {
+	source, destination, ignore string
+	keep, watch                 bool
 }
 
-func checkFolder(src fsync.Filer, des fsync.Filer) {
-	// source folder should exist and be a folder
-	srcInfoRoot, err := os.Stat(src.Dir())
-	task(func() error {
-		if err != nil {
-			return err
-		}
-		if !srcInfoRoot.IsDir() {
-			return errors.New("source path is not a valid folder")
-		}
-		return nil
-	}, "check source path")
+func parseCommandLine() (args Args) {
+	flagSet := flag.NewFlagSet("foldersync", flag.ContinueOnError)
 
-	// destination folder should be a folder and exist
-	desInfoRoot, err := os.Stat(des.Dir())
-	if os.IsNotExist(err) {
-		task(func() error {
-			return des.Mkdir(des.Dir(), srcInfoRoot.Mode().Perm())
-		}, "creating [%s]", des.Dir())
+	flagSet.StringVar(&args.source, "src", ".", "Path of the source directory")
+	flagSet.StringVar(&args.destination, "des", ".", "Path of the destination directory")
+	flagSet.StringVar(&args.ignore, "ignore", "", "Path of the ignore file")
+	flagSet.BoolVar(&args.keep, "keep", false, "Keep the files that in destination but not in source")
+	flagSet.BoolVar(&args.keep, "k", false, "Keep the files that in destination but not in source(shorthand)")
+	flagSet.BoolVar(&args.watch, "watch", false, "Watch both dir and sync when any changes")
+	flagSet.BoolVar(&args.watch, "w", false, "Watch both dir and sync when any changes(shorthand)")
+
+	err := flagSet.Parse(os.Args[1:])
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println()
+
+		flagSet.PrintDefaults()
+		os.Exit(-1)
 	}
-	if !desInfoRoot.IsDir() {
-		task(func() error {
-			return des.Remove(des.Dir())
-		}, "removing [%s]", des.Dir())
-		task(func() error {
-			return des.Mkdir(des.Dir(), srcInfoRoot.Mode().Perm())
-		}, "creating [%s]", des.Dir())
-	}
-}
-
-func readFileList(src fsync.Filer, des fsync.Filer) (listSource fsync.FileList, listDestination fsync.FileList) {
-	task(func() error {
-		listSource = make(fsync.FileList)
-		return src.GetList(&listSource)
-	}, "reading list [%s]", src.Dir())
-
-	task(func() error {
-		listDestination = make(fsync.FileList)
-		return des.GetList(&listDestination)
-	}, "reading list [%s]", des.Dir())
-
 	return
 }
 
-func sync(src fsync.Filer, des fsync.Filer) {
-	// recover-panic
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Println()
-			fmt.Println("all done!")
-		}
-	}()
-
-	checkFolder(src, des)
-	listSource, listDestination := readFileList(src, des)
-
-	indexes := cache.Indexer{}
-	indexPath := filepath.Join(des.Dir(), ".sync-cache")
-	task(func() error {
-		return indexes.Load(indexPath)
-	}, "loading indexes [%s]", indexPath)
-
-	defer task(func() error {
-		return indexes.Save()
-	}, "writing indexes [%s]", indexPath)
-
-	removeDirs := make([]string, 0)
-	for path, srcInfo := range listSource {
-		srcPath := filepath.Join(src.Dir(), path)
-		desPath := filepath.Join(des.Dir(), path)
-
-		if desInfo, ok := listDestination[path]; !ok {
-			if srcInfo.IsDir() {
-				task(func() error {
-					return des.Mkdir(desPath, srcInfo.Mode().Perm())
-				}, "creating [%s]", desPath)
-			} else {
-				task(func() error {
-					return des.Copy(srcPath, desPath, srcInfo.Mode().Perm())
-				}, "copying [%s]", desPath)
-			}
-		} else {
-			if desInfo.IsDir() {
-				if !srcInfo.IsDir() {
-					task(func() error {
-						return des.Remove(desPath)
-					}, "removing [%s]", desPath)
-
-					removeDirs = append(removeDirs, path+"/")
-				}
-			} else {
-				if indexes.Checksum(srcPath, srcInfo) != indexes.Checksum(desPath, desInfo) {
-					task(func() error {
-						return des.Copy(srcPath, desPath, srcInfo.Mode().Perm())
-					}, "copying [%s]", desPath)
-				}
-			}
-			delete(listDestination, path)
-		}
-	}
-
-	for path := range listDestination {
-		desPath := filepath.Join(des.Dir(), path)
-
-		task(func() error {
-			return des.Remove(desPath)
-		}, "removing [%s]", desPath)
-	}
-}
-
 func main() {
-	argc := len(os.Args)
-	if argc < 2 {
-		// TODO: help()
-		return
-	}
+	args := parseCommandLine()
 
-	srcDir, err := filepath.Abs(os.Args[1])
+	srcDir, err := filepath.Abs(args.source)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	desDir, err := filepath.Abs(".")
+	desDir, err := filepath.Abs(args.destination)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	if argc > 2 {
-		desDir, err = filepath.Abs(os.Args[2])
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-	}
 
-	// srcDir := "/Users/hoolai/git/hScene"
-	// desDir := "/Users/hoolai/Downloads/temp"
-	filter := &fsync.SkipSetting{}
+	filter := &fsync.IgnoreSetting{}
 	filter.Parse(".git/\n.sync-cache")
 
 	src := local.File{srcDir, filter}
 	des := local.File{desDir, filter}
-	sync(&src, &des)
+
+	sc := &fsync.Sync{&src, &des, args.keep}
+	sc.Run()
 }

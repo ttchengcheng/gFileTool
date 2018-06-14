@@ -12,8 +12,8 @@ import (
 
 // File of local disk
 type File struct {
-	Path       string
-	SkipFilter *fsync.SkipSetting
+	Path          string
+	IgnoreSetting *fsync.IgnoreSetting
 }
 
 // Checksum is a function to calculate sha1 with path of the file
@@ -54,7 +54,7 @@ func (f *File) GetList(list *fsync.FileList) error {
 		return nil
 	}
 	return filepath.Walk(f.Path, func(path string, fileInfo os.FileInfo, err error) error {
-		if f.SkipFilter != nil && f.SkipFilter.IsSkipped(path, fileInfo) {
+		if f.IgnoreSetting != nil && f.IgnoreSetting.IsIgnored(path, fileInfo) {
 			if fileInfo.IsDir() {
 				return filepath.SkipDir
 			} else {

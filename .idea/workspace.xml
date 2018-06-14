@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="eb5e3369-5f49-4bcf-85bf-c24f3c9a734c" name="Default" comment="">
+    <list default="true" id="eb5e3369-5f49-4bcf-85bf-c24f3c9a734c" name="Default" comment="fix: if the destination dir does not exist, the first time running will failed&#10;add: switch for keep files that not in source dir but in destination dir&#10;add: parsing command line args with Flag package&#10;improve: naming of SkipXXX -&gt; IgnoreXXX">
+      <change afterPath="$PROJECT_DIR$/fsync/sync.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fsync/cache/indexer.go" beforeDir="false" afterPath="$PROJECT_DIR$/fsync/indexer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fsync/local/file.go" beforeDir="false" afterPath="$PROJECT_DIR$/fsync/local/file.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fsync/local/file_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/fsync/local/file_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fsync/main/debug" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fsync/main/main" beforeDir="false" afterPath="$PROJECT_DIR$/fsync/main/main" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fsync/main/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/fsync/main/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fsync/skipsetting.go" beforeDir="false" afterPath="$PROJECT_DIR$/fsync/ignoresetting.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,45 +28,48 @@
     <option name="myElementSize" value="363" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+    <leaf>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/fsync/skipsetting.go">
+        <entry file="file://$PROJECT_DIR$/fsync/local/file.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="194">
-              <caret line="64" column="72" selection-start-line="64" selection-start-column="68" selection-end-line="64" selection-end-column="72" />
+            <state relative-caret-position="312">
+              <caret line="58" column="27" selection-start-line="58" selection-start-column="24" selection-end-line="58" selection-end-column="31" />
               <folding>
-                <element signature="e#15#42#0" expanded="true" />
+                <element signature="e#15#115#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/fsync/main/main.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-173">
+              <caret line="2" column="10" lean-forward="true" selection-start-line="2" selection-start-column="10" selection-end-line="2" selection-end-column="10" />
+              <folding>
+                <element signature="e#249#381#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/fsync/main/main.go">
+        <entry file="file://$PROJECT_DIR$/fsync/local/file_test.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="166" column="18" lean-forward="true" selection-start-line="166" selection-start-column="18" selection-end-line="166" selection-end-column="18" />
+            <state relative-caret-position="342">
+              <caret line="109" column="16" selection-start-line="109" selection-start-column="10" selection-end-line="109" selection-end-column="16" />
               <folding>
-                <element signature="e#77#295#0" expanded="true" />
+                <element signature="e#15#117#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/fsync/cache/indexer.go">
+        <entry file="file://$PROJECT_DIR$/fsync/sync.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1119">
-              <caret line="84" column="37" selection-start-line="84" selection-start-column="37" selection-end-line="84" selection-end-column="37" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/fsync/filer.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="9" column="4" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="4" />
+            <state relative-caret-position="377">
+              <caret line="55" column="30" selection-start-line="55" selection-start-column="30" selection-end-line="55" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -89,6 +99,13 @@
       <find>make</find>
       <find>grou</find>
       <find>all</find>
+      <find>File</find>
+      <find>run</find>
+      <find>checksum</find>
+      <find>keep</find>
+      <find>keepot</find>
+      <find>Skip</find>
+      <find>skip</find>
     </findStrings>
     <replaceStrings>
       <replace>log.check(</replace>
@@ -113,12 +130,16 @@
         <option value="$PROJECT_DIR$/fsync/local/test_files/indexbuilder.go" />
         <option value="$PROJECT_DIR$/fsync/filer.go" />
         <option value="$PROJECT_DIR$/fsync/index.go" />
-        <option value="$PROJECT_DIR$/fsync/indexer.go" />
         <option value="$PROJECT_DIR$/fsync/skipsetting.go" />
-        <option value="$PROJECT_DIR$/fsync/local/file_test.go" />
-        <option value="$PROJECT_DIR$/fsync/local/file.go" />
         <option value="$PROJECT_DIR$/fsync/cache/indexer.go" />
+        <option value="$PROJECT_DIR$/fsync/console/argparser.go" />
+        <option value="$PROJECT_DIR$/fsync/console/argsparser.go" />
+        <option value="$PROJECT_DIR$/fsync/indexer.go" />
+        <option value="$PROJECT_DIR$/fsync/local/file.go" />
+        <option value="$PROJECT_DIR$/fsync/ignoresetting.go" />
+        <option value="$PROJECT_DIR$/fsync/sync.go" />
         <option value="$PROJECT_DIR$/fsync/main/main.go" />
+        <option value="$PROJECT_DIR$/fsync/local/file_test.go" />
       </list>
     </option>
   </component>
@@ -156,12 +177,6 @@
               <item name="file" type="b2602c69:ProjectViewProjectNode" />
               <item name="file" type="462c0819:PsiDirectoryNode" />
               <item name="fsync" type="462c0819:PsiDirectoryNode" />
-              <item name="cache" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="file" type="b2602c69:ProjectViewProjectNode" />
-              <item name="file" type="462c0819:PsiDirectoryNode" />
-              <item name="fsync" type="462c0819:PsiDirectoryNode" />
               <item name="local" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -190,6 +205,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="GO_FMT" value="true" />
     <property name="SearchEverywhereHistoryKey" value="readline&#9;null&#9;null" />
     <property name="configurable.Global.GOPATH.is.expanded" value="true" />
     <property name="configurable.Module.GOPATH.is.expanded" value="false" />
@@ -200,10 +216,11 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="editing.templates" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/fsync" />
       <recent name="$PROJECT_DIR$/fsync/cache" />
       <recent name="$PROJECT_DIR$/sync/local" />
     </key>
@@ -225,6 +242,7 @@
       <module name="file" />
       <working_directory value="$PROJECT_DIR$/" />
       <go_parameters value="-i" />
+      <parameters value="$USER_HOME$/git/hScene -des $USER_HOME$/Downloads/temp -k" />
       <kind value="FILE" />
       <filePath value="$PROJECT_DIR$/fsync/main/main.go" />
       <package value="github.com/ttchengcheng/file" />
@@ -289,10 +307,10 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Go Test.go test file" />
       <item itemvalue="Go Build.go build main.go" />
       <item itemvalue="Go Test.TestFile_Checksum in github.com/ttchengcheng/file/fsync/local" />
       <item itemvalue="Go Test.TestFile_Dir in github.com/ttchengcheng/file/fsync/local" />
-      <item itemvalue="Go Test.go test file" />
       <item itemvalue="Go Test.TestFile_Copy in github.com/ttchengcheng/file/fsync/local" />
       <item itemvalue="Go Test.file_test.go" />
     </list>
@@ -342,12 +360,13 @@
     <frame x="0" y="23" width="1920" height="1057" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15729167" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15729167" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info active="true" anchor="bottom" id="Messages" visible="true" weight="0.3296146" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3296146" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49947917" visible="true" weight="0.38742393" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49947917" weight="0.38742393" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3995943" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -379,6 +398,10 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="fix: if the destination dir does not exist, the first time running will failed&#10;add: switch for keep files that not in source dir but in destination dir&#10;add: parsing command line args with Flag package&#10;improve: naming of SkipXXX -&gt; IgnoreXXX" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: if the destination dir does not exist, the first time running will failed&#10;add: switch for keep files that not in source dir but in destination dir&#10;add: parsing command line args with Flag package&#10;improve: naming of SkipXXX -&gt; IgnoreXXX" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
@@ -388,8 +411,20 @@
           <properties />
           <option name="timeStamp" value="2" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/fsync/sync.go</url>
+          <line>97</line>
+          <properties />
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/fsync/sync.go</url>
+          <line>110</line>
+          <properties />
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="11" />
+      <option name="time" value="15" />
     </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
@@ -553,60 +588,94 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/fsync/console/argsparser.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="27" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/flag/flag.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="147">
+          <caret line="908" column="18" selection-start-line="908" selection-start-column="18" selection-end-line="908" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/fsync/filer.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
-          <caret line="9" column="4" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="4" />
+          <caret line="9" column="2" selection-start-line="9" selection-start-column="2" selection-end-line="9" selection-end-column="2" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/fsync/local/file.go">
+    <entry file="file://$PROJECT_DIR$/fsync/indexer.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1560">
-          <caret line="104" column="17" selection-start-line="104" selection-start-column="17" selection-end-line="104" selection-end-column="17" />
+        <state relative-caret-position="-728">
+          <caret line="13" selection-start-line="13" selection-end-line="13" />
           <folding>
-            <element signature="e#15#116#0" expanded="true" />
+            <element signature="e#15#117#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/fsync/local/file_test.go">
+    <entry file="file://$PROJECT_DIR$/.sync-cache">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
-          <caret line="8" selection-start-line="8" selection-end-line="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/fsync/skipsetting.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="194">
-          <caret line="64" column="72" selection-start-line="64" selection-start-column="68" selection-end-line="64" selection-end-column="72" />
-          <folding>
-            <element signature="e#15#42#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/fsync/cache/indexer.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1119">
-          <caret line="84" column="37" selection-start-line="84" selection-start-column="37" selection-end-line="84" selection-end-column="37" />
+          <caret line="7" column="76" selection-start-line="7" selection-start-column="76" selection-end-line="7" selection-end-column="76" />
         </state>
       </provider>
     </entry>
     <entry file="file:///usr/local/go/src/path/filepath/path.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="418">
-          <caret line="239" column="5" selection-start-line="239" selection-start-column="5" selection-end-line="239" selection-end-column="5" />
+          <caret line="333" column="4" selection-start-line="333" selection-start-column="4" selection-end-line="333" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fsync/local/file.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="58" column="27" selection-start-line="58" selection-start-column="24" selection-end-line="58" selection-end-column="31" />
+          <folding>
+            <element signature="e#15#115#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fsync/ignoresetting.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="96" selection-start-line="7" selection-start-column="96" selection-end-line="7" selection-end-column="96" />
+          <folding>
+            <element signature="e#15#42#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fsync/sync.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="377">
+          <caret line="55" column="30" selection-start-line="55" selection-start-column="30" selection-end-line="55" selection-end-column="30" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/fsync/main/main.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="166" column="18" lean-forward="true" selection-start-line="166" selection-start-column="18" selection-end-line="166" selection-end-column="18" />
+        <state relative-caret-position="-173">
+          <caret line="2" column="10" lean-forward="true" selection-start-line="2" selection-start-column="10" selection-end-line="2" selection-end-column="10" />
           <folding>
-            <element signature="e#77#295#0" expanded="true" />
+            <element signature="e#249#381#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fsync/local/file_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="109" column="16" selection-start-line="109" selection-start-column="10" selection-end-line="109" selection-end-column="16" />
+          <folding>
+            <element signature="e#15#117#0" expanded="true" />
           </folding>
         </state>
       </provider>

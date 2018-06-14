@@ -1,4 +1,4 @@
-package cache
+package fsync
 
 import (
 	"bufio"
@@ -6,13 +6,12 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/ttchengcheng/file/fsync/local"
 )
 
 // Indexer
 type Indexer struct {
 	path string
+	file Filer
 	data map[string][]string
 }
 
@@ -24,11 +23,10 @@ const (
 )
 
 // Load
-func (indexer *Indexer) Load(path string) error {
+func (indexer *Indexer) Load() error {
 	if indexer == nil {
 		return errors.New("indexer is nil")
 	}
-	indexer.path = path
 	if indexer.data == nil {
 		indexer.data = make(map[string][]string)
 	}
@@ -99,8 +97,7 @@ func (indexer *Indexer) Checksum(path string, info os.FileInfo) (checksum string
 	modTime := info.ModTime().String()
 	index, ok := indexer.data[path]
 	if !ok || len(index) <= fieldChecksum || index[fieldSize] != size || index[fieldModTime] != modTime {
-		f := local.File{}
-		checksum, _ = f.Checksum(path)
+		checksum, _ = indexer.file.Checksum(path)
 		indexer.data[path] = []string{path, size, modTime, checksum}
 		return
 	}
