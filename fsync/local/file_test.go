@@ -2,24 +2,17 @@ package local
 
 import (
 	"os"
-	"path"
 	"path/filepath"
-	"runtime"
 	"testing"
 
 	"github.com/ttchengcheng/file/fsync"
 )
 
-func curWorkingPath() string {
-	_, currentFilePath, _, _ := runtime.Caller(0)
-	return path.Dir(currentFilePath)
-}
-
 func TestFile_Checksum(t *testing.T) {
 	f := File{}
 	cases := []struct {
 		path, checksum string
-		hasError       bool
+		wantErr        bool
 	}{
 		{"testdata/a.txt", "fff8f4ad15963784e898d2f76987c87908755def", false},
 		{"testdata/big.binary", "0e2aa6b139224b64b41dc9ad6c3c7f124f45b1c1", false},
@@ -28,13 +21,12 @@ func TestFile_Checksum(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		// path := filepath.Join(folder, c.path)
 		checksum, err := f.Checksum(c.path)
 
 		switch {
-		case c.hasError && err == nil:
+		case c.wantErr && err == nil:
 			t.Error("want an error, but no error happens")
-		case !c.hasError && err != nil:
+		case !c.wantErr && err != nil:
 			t.Errorf("want no error, but error [%s] happens", err.Error())
 		case checksum != c.checksum:
 			t.Errorf("checksum of [%s] is [%s], want [%s]", c.path, checksum, c.checksum)
@@ -58,7 +50,6 @@ func TestFile_Dir(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		// path := filepath.Join(folder, c.path)
 		dir := c.file.Dir()
 
 		switch {
@@ -71,10 +62,9 @@ func TestFile_Dir(t *testing.T) {
 func TestFile_Copy(t *testing.T) {
 	f := File{}
 
-	curPath := curWorkingPath()
 	cases := []struct {
 		src, des  string
-		hasError  bool
+		wantErr   bool
 		cleanList []string
 	}{
 		{"testdata/a.txt", "test_files/aa.txt", false, []string{}},
@@ -84,15 +74,15 @@ func TestFile_Copy(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		srcPath := filepath.Join(curPath, c.src)
-		desPath := filepath.Join(curPath, c.des)
+		srcPath, _ := filepath.Abs(c.src)
+		desPath, _ := filepath.Abs(c.des)
 
 		err := f.Copy(srcPath, desPath, 0666)
 
 		switch {
-		case c.hasError && err == nil:
+		case c.wantErr && err == nil:
 			t.Error("want an error, but no error happens")
-		case !c.hasError && err != nil:
+		case !c.wantErr && err != nil:
 			t.Errorf("want no error, but error [%s] happens", err.Error())
 		}
 
@@ -118,16 +108,19 @@ func TestFile_GetList(t *testing.T) {
 		Path          string
 		IgnoreSetting *fsync.IgnoreSetting
 	}
-	type args struct {
-		list *fsync.FileList
-	}
+
+	is := fsync.IgnoreSetting{}
+	is.Parse("empty\nignore/")
+
 	tests := []struct {
 		name    string
 		fields  fields
-		args    args
 		wantErr bool
 	}{
-	// TODO: Add test cases.
+		{name: "", fields: fields{Path: "testdata", IgnoreSetting: &is}, wantErr: false},
+		{name: "", fields: fields{Path: "aa", IgnoreSetting: &is}, wantErr: false},
+		{name: "", fields: fields{Path: "aa", IgnoreSetting: &is}, wantErr: false},
+		{name: "", fields: fields{Path: "aa", IgnoreSetting: &is}, wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -135,7 +128,8 @@ func TestFile_GetList(t *testing.T) {
 				Path:          tt.fields.Path,
 				IgnoreSetting: tt.fields.IgnoreSetting,
 			}
-			if err := f.GetList(tt.args.list); (err != nil) != tt.wantErr {
+			var list = fsync.FileList{}
+			if err := f.GetList(&list); (err != nil) != tt.wantErr {
 				t.Errorf("File.GetList() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

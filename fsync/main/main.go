@@ -1,6 +1,5 @@
 /*
 TODO:
-. parallel
 . skip file customization: .syncignore
 . test case
 */
@@ -47,6 +46,8 @@ func parseCommandLine() (args Args) {
 func main() {
 	args := parseCommandLine()
 
+	parseCommandLine()
+
 	srcDir, err := filepath.Abs(args.source)
 	if err != nil {
 		fmt.Println(err)
@@ -62,9 +63,9 @@ func main() {
 	filter := &fsync.IgnoreSetting{}
 	filter.Parse(".git/\n.sync-cache")
 
-	src := local.File{srcDir, filter}
-	des := local.File{desDir, filter}
+	src := local.File{Path: srcDir, IgnoreSetting: filter}
+	des := local.File{Path: desDir, IgnoreSetting: filter}
 
-	sc := &fsync.Sync{&src, &des, args.keep}
+	sc := &fsync.Sync{Source: &src, Destination: &des, KeepOther: args.keep}
 	sc.Run()
 }
