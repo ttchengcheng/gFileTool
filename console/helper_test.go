@@ -14,5 +14,5 @@ func TestAppendFile(t *testing.T) {
 }
 
 func TestExec(t *testing.T) {
-	Exec("ls", "-l", "-a")
+	Exec("sh", "ls > aaa")
 }

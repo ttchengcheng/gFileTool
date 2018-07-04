@@ -5,6 +5,9 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
+
+	"github.com/fatih/color"
 )
 
 // Prompt is a
@@ -15,27 +18,16 @@ func Prompt(title string) (input string) {
 	return
 }
 
+func Shell(path string, args ...string) error {
+	return Exec("sh", "-c", path+" "+strings.Join(args, " "))
+}
+
 func Exec(path string, args ...string) error {
-	// out, _ := exec.Command(path, args...).Output()
-	// fmt.Printf("%s\n", out)
-
-	path, err := exec.LookPath(path)
-	if err != nil {
-		return err
-	}
-
-	p, err := os.StartProcess(path, args, &os.ProcAttr{})
-	if err != nil {
-		return err
-	}
-	_, err = p.Wait()
-
-	return err
-	// cmd := exec.Command(path, args...)
-	// cmd.Stdin = os.Stdin
-	// cmd.Stdout = os.Stdout
-	// cmd.Stderr = os.Stderr
-	// cmd.Run()
+	cmd := exec.Command(path, args...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
 func AppendFile(src string, des string) error {
@@ -60,4 +52,19 @@ func AppendFile(src string, des string) error {
 	f.Write(data)
 
 	return nil
+}
+
+func Outputf(format string, a ...interface{}) {
+	color.Cyan(format, a...)
+}
+
+func Errorf(format string, a ...interface{}) {
+	color.Red(format, a...)
+}
+
+func Error(err *error) {
+	if err == nil {
+		return
+	}
+	Errorf("%s\n", (*err).Error())
 }
